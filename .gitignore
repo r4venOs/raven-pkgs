@@ -1,0 +1,26 @@
+# Build outputs
+*.iso
+*.img
+output/
+work/
+
+# Arch Linux package build files
+*.pkg.tar.zst
+*.pkg.tar.xz
+pkg/
+src/
+
+# Temporary files
+*.tmp
+*.log
+*~
+.*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
