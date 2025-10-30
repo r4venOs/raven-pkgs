@@ -1,42 +1,54 @@
 post_install() {
+    # Auto-install for the user who ran pacman
+    if [ -n "$SUDO_USER" ]; then
+        USER_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+        
+        # Create config directory if it doesn't exist
+        if [ ! -d "$USER_HOME/.config/kitty" ]; then
+            sudo -u "$SUDO_USER" mkdir -p "$USER_HOME/.config/kitty"
+            sudo -u "$SUDO_USER" cp -r /etc/skel/.config/kitty/* "$USER_HOME/.config/kitty/"
+            echo "✓ Kitty configuration installed to $USER_HOME/.config/kitty/"
+        else
+            # Backup existing config
+            if [ ! -d "$USER_HOME/.config/kitty.backup" ]; then
+                sudo -u "$SUDO_USER" cp -r "$USER_HOME/.config/kitty" "$USER_HOME/.config/kitty.backup"
+                echo "✓ Existing config backed up to $USER_HOME/.config/kitty.backup"
+            fi
+            
+            # Ask to overwrite
+            echo ""
+            echo "Existing kitty configuration found."
+            read -p "Overwrite with Raven config? (y/N): " overwrite
+            if [[ "$overwrite" =~ ^[Yy]$ ]]; then
+                sudo -u "$SUDO_USER" cp -r /etc/skel/.config/kitty/* "$USER_HOME/.config/kitty/"
+                echo "✓ Configuration updated"
+            else
+                echo "Configuration NOT updated. Your existing config is preserved."
+                echo "To manually update: cp -r /etc/skel/.config/kitty/* ~/.config/kitty/"
+            fi
+        fi
+    fi
+    
     cat << EOF
 
 ╔════════════════════════════════════════════════════════════╗
 ║           Raven Kitty Configuration Installed              ║
 ╚════════════════════════════════════════════════════════════╝
 
-✓ Kitty configuration installed to /etc/skel/.config/kitty/
-
-For NEW users:
-  - Configuration will be automatically copied on first login
-
-For EXISTING users:
-  - Copy manually: cp -r /etc/skel/.config/kitty ~/.config/
-  - Or backup and replace: mv ~/.config/kitty ~/.config/kitty.bak
-                          cp -r /etc/skel/.config/kitty ~/.config/
-
-Configuration files included:
+Configuration files:
   • kitty.conf    - Main configuration
   • theme.conf    - Color theme
   • colors.conf   - Color definitions
-  • config        - Additional settings
 
 Recommended fonts (install with pacman -S):
   • ttf-firacode-nerd      - FiraCode with Nerd Font icons
   • ttf-jetbrains-mono-nerd - JetBrains Mono with icons
-  • nerd-fonts             - Complete Nerd Fonts collection
-
-Quick start:
-  1. Open Kitty terminal
-  2. Press Ctrl+Shift+F2 to reload config
-  3. Press Ctrl+Shift+F5 to edit config
 
 Useful keybindings:
   • Ctrl+Shift+Enter  - New window
   • Ctrl+Shift+T      - New tab
   • Ctrl+Shift+W      - Close window
-  • Ctrl+Shift+]      - Next tab
-  • Ctrl+Shift+[      - Previous tab
+  • Ctrl+Shift+F2     - Reload config
   • Ctrl+Shift+F11    - Toggle fullscreen
 
 For more info: https://sw.kovidgoyal.net/kitty/

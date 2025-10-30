@@ -1,43 +1,69 @@
 post_install() {
+    # Auto-install for the user who ran pacman
+    if [ -n "$SUDO_USER" ]; then
+        USER_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+        
+        # Create config directory if it doesn't exist
+        if [ ! -d "$USER_HOME/.config/qtile" ]; then
+            sudo -u "$SUDO_USER" mkdir -p "$USER_HOME/.config/qtile"
+            sudo -u "$SUDO_USER" cp -r /etc/skel/.config/qtile/* "$USER_HOME/.config/qtile/"
+            
+            # Make autostart.sh executable
+            if [ -f "$USER_HOME/.config/qtile/autostart.sh" ]; then
+                sudo -u "$SUDO_USER" chmod +x "$USER_HOME/.config/qtile/autostart.sh"
+            fi
+            
+            echo "✓ Qtile configuration installed to $USER_HOME/.config/qtile/"
+        else
+            # Backup existing config
+            if [ ! -d "$USER_HOME/.config/qtile.backup" ]; then
+                sudo -u "$SUDO_USER" cp -r "$USER_HOME/.config/qtile" "$USER_HOME/.config/qtile.backup"
+                echo "✓ Existing config backed up to $USER_HOME/.config/qtile.backup"
+            fi
+            
+            # Ask to overwrite
+            echo ""
+            echo "Existing qtile configuration found."
+            read -p "Overwrite with Raven config? (y/N): " overwrite
+            if [[ "$overwrite" =~ ^[Yy]$ ]]; then
+                sudo -u "$SUDO_USER" cp -r /etc/skel/.config/qtile/* "$USER_HOME/.config/qtile/"
+                
+                # Make autostart.sh executable
+                if [ -f "$USER_HOME/.config/qtile/autostart.sh" ]; then
+                    sudo -u "$SUDO_USER" chmod +x "$USER_HOME/.config/qtile/autostart.sh"
+                fi
+                
+                echo "✓ Configuration updated"
+            else
+                echo "Configuration NOT updated. Your existing config is preserved."
+                echo "To manually update: cp -r /etc/skel/.config/qtile/* ~/.config/qtile/"
+            fi
+        fi
+    fi
+    
     cat << EOF
 
 ╔════════════════════════════════════════════════════════════╗
 ║           Raven Qtile Configuration Installed              ║
 ╚════════════════════════════════════════════════════════════╝
 
-✓ Qtile configuration installed to /etc/skel/.config/qtile/
-
-For NEW users:
-  - Configuration will be automatically copied on first login
-
-For EXISTING users:
-  - Copy manually: cp -r /etc/skel/.config/qtile ~/.config/
-  - Or backup and replace: mv ~/.config/qtile ~/.config/qtile.bak
-                          cp -r /etc/skel/.config/qtile ~/.config/
-
 Recommended packages (install with pacman -S):
   • picom          - Compositor for transparency
   • nitrogen       - Wallpaper manager
   • rofi           - Application launcher
-  • kitty/alacritty - Terminal emulator
+  • kitty          - Terminal emulator
   • dunst          - Notification daemon
-  • playerctl      - Media control
-  • brightnessctl  - Brightness control
-  • pamixer        - Audio control
 
 Quick start:
   1. Log out of current session
   2. Select Qtile from display manager
   3. Log in
-  4. Press Mod+Return to open terminal
-  5. Press Mod+Shift+Return to open rofi
 
 Default keybindings:
   • Mod+Return       - Terminal
   • Mod+Shift+Return - Rofi launcher
   • Mod+q            - Close window
   • Mod+Shift+r      - Restart Qtile
-  • Mod+Shift+q      - Quit Qtile
 
 For more info: https://github.com/r4venOs/raven-qtile
 
