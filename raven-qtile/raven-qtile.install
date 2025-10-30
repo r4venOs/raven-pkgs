@@ -1,13 +1,84 @@
 post_install() {
-    echo "Package installed successfully!"
-    # Add post-installation commands here
+    cat << EOF
+
+╔════════════════════════════════════════════════════════════╗
+║           Raven Qtile Configuration Installed              ║
+╚════════════════════════════════════════════════════════════╝
+
+✓ Qtile configuration installed to /etc/skel/.config/qtile/
+
+For NEW users:
+  - Configuration will be automatically copied on first login
+
+For EXISTING users:
+  - Copy manually: cp -r /etc/skel/.config/qtile ~/.config/
+  - Or backup and replace: mv ~/.config/qtile ~/.config/qtile.bak
+                          cp -r /etc/skel/.config/qtile ~/.config/
+
+Recommended packages (install with pacman -S):
+  • picom          - Compositor for transparency
+  • nitrogen       - Wallpaper manager
+  • rofi           - Application launcher
+  • kitty/alacritty - Terminal emulator
+  • dunst          - Notification daemon
+  • playerctl      - Media control
+  • brightnessctl  - Brightness control
+  • pamixer        - Audio control
+
+Quick start:
+  1. Log out of current session
+  2. Select Qtile from display manager
+  3. Log in
+  4. Press Mod+Return to open terminal
+  5. Press Mod+Shift+Return to open rofi
+
+Default keybindings:
+  • Mod+Return       - Terminal
+  • Mod+Shift+Return - Rofi launcher
+  • Mod+q            - Close window
+  • Mod+Shift+r      - Restart Qtile
+  • Mod+Shift+q      - Quit Qtile
+
+For more info: https://github.com/r4venOs/raven-qtile
+
+EOF
 }
 
 post_upgrade() {
-    post_install
+    cat << EOF
+
+╔════════════════════════════════════════════════════════════╗
+║           Raven Qtile Configuration Updated                ║
+╚════════════════════════════════════════════════════════════╝
+
+✓ Configuration updated in /etc/skel/.config/qtile/
+
+IMPORTANT: Your existing configuration was NOT modified.
+
+To update your personal config:
+  1. Backup current: cp -r ~/.config/qtile ~/.config/qtile.backup
+  2. Update: cp -r /etc/skel/.config/qtile ~/.config/
+  3. Restart Qtile: Mod+Shift+r
+
+Or merge changes manually from /etc/skel/.config/qtile/
+
+EOF
 }
 
 pre_remove() {
-    # Add pre-removal commands here
-    :
+    cat << EOF
+
+Removing Raven Qtile configuration...
+Your personal config in ~/.config/qtile will NOT be removed.
+
+EOF
+}
+
+post_remove() {
+    cat << EOF
+
+Raven Qtile configuration removed from /etc/skel/
+Your personal configuration remains in ~/.config/qtile
+
+EOF
 }

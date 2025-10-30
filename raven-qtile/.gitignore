@@ -1,10 +1,38 @@
+<<<<<<< HEAD
+# Build outputs
+*.iso
+*.img
+output/
+work/
+
+# Arch Linux package build files
+*.pkg.tar.zst
+*.pkg.tar.xz
+=======
 # Build files
 *.pkg.tar.*
 *.src.tar.gz
+>>>>>>> d96d816 (Initial commit)
 pkg/
 src/
 
 # Temporary files
+<<<<<<< HEAD
+*.tmp
 *.log
 *~
 .*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+=======
+*.log
+*~
+.*.swp
+>>>>>>> d96d816 (Initial commit)

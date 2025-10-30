@@ -1,0 +1,71 @@
+# Maintainer: r4venOs <https://github.com/r4venOs>
+pkgname=raven-kitty
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Raven Kitty configuration - Custom Kitty terminal emulator config for OffenArch"
+arch=('any')
+url="https://github.com/r4venOs/raven-kitty"
+license=('MIT')
+depends=('kitty')
+optdepends=(
+    'ttf-firacode-nerd: Recommended font with ligatures'
+    'ttf-jetbrains-mono-nerd: Alternative programming font'
+    'nerd-fonts: Icon support'
+)
+backup=('etc/skel/.config/kitty/kitty.conf'
+        'etc/skel/.config/kitty/theme.conf'
+        'etc/skel/.config/kitty/colors.conf')
+install=${pkgname}.install
+source=()
+sha256sums=()
+
+package() {
+    # Copy kitty configuration from local directory
+    # Files should be in: etc/skel/.config/kitty/ relative to PKGBUILD
+    
+    if [ -d "${startdir}/etc/skel/.config/kitty" ]; then
+        # Use local etc/skel structure
+        install -dm755 "${pkgdir}/etc/skel/.config"
+        cp -r "${startdir}/etc/skel/.config/kitty" "${pkgdir}/etc/skel/.config/"
+        
+        # Set proper permissions
+        find "${pkgdir}/etc/skel/.config/kitty" -type f -exec chmod 644 {} \;
+        find "${pkgdir}/etc/skel/.config/kitty" -type d -exec chmod 755 {} \;
+    else
+        # Fallback: copy from user's home directory
+        if [ -d "$HOME/.config/kitty" ]; then
+            install -dm755 "${pkgdir}/etc/skel/.config/kitty"
+            
+            # Copy main configuration
+            if [ -f "$HOME/.config/kitty/kitty.conf" ]; then
+                install -Dm644 "$HOME/.config/kitty/kitty.conf" "${pkgdir}/etc/skel/.config/kitty/kitty.conf"
+            fi
+            
+            # Copy theme configuration
+            if [ -f "$HOME/.config/kitty/theme.conf" ]; then
+                install -Dm644 "$HOME/.config/kitty/theme.conf" "${pkgdir}/etc/skel/.config/kitty/theme.conf"
+            fi
+            
+            # Copy colors configuration
+            if [ -f "$HOME/.config/kitty/colors.conf" ]; then
+                install -Dm644 "$HOME/.config/kitty/colors.conf" "${pkgdir}/etc/skel/.config/kitty/colors.conf"
+            fi
+            
+            # Copy config file if exists
+            if [ -f "$HOME/.config/kitty/config" ]; then
+                install -Dm644 "$HOME/.config/kitty/config" "${pkgdir}/etc/skel/.config/kitty/config"
+            fi
+            
+            # Copy any additional .conf files
+            for conf in "$HOME/.config/kitty/"*.conf; do
+                if [ -f "$conf" ] && [ "$(basename "$conf")" != "kitty.conf" ] && [ "$(basename "$conf")" != "theme.conf" ] && [ "$(basename "$conf")" != "colors.conf" ]; then
+                    cp "$conf" "${pkgdir}/etc/skel/.config/kitty/"
+                fi
+            done
+        else
+            echo "ERROR: No kitty configuration found!"
+            echo "Please create etc/skel/.config/kitty/ directory with your config files"
+            return 1
+        fi
+    fi
+}

@@ -1,0 +1,84 @@
+post_install() {
+    cat << EOF
+
+╔════════════════════════════════════════════════════════════╗
+║           Raven Kitty Configuration Installed              ║
+╚════════════════════════════════════════════════════════════╝
+
+✓ Kitty configuration installed to /etc/skel/.config/kitty/
+
+For NEW users:
+  - Configuration will be automatically copied on first login
+
+For EXISTING users:
+  - Copy manually: cp -r /etc/skel/.config/kitty ~/.config/
+  - Or backup and replace: mv ~/.config/kitty ~/.config/kitty.bak
+                          cp -r /etc/skel/.config/kitty ~/.config/
+
+Configuration files included:
+  • kitty.conf    - Main configuration
+  • theme.conf    - Color theme
+  • colors.conf   - Color definitions
+  • config        - Additional settings
+
+Recommended fonts (install with pacman -S):
+  • ttf-firacode-nerd      - FiraCode with Nerd Font icons
+  • ttf-jetbrains-mono-nerd - JetBrains Mono with icons
+  • nerd-fonts             - Complete Nerd Fonts collection
+
+Quick start:
+  1. Open Kitty terminal
+  2. Press Ctrl+Shift+F2 to reload config
+  3. Press Ctrl+Shift+F5 to edit config
+
+Useful keybindings:
+  • Ctrl+Shift+Enter  - New window
+  • Ctrl+Shift+T      - New tab
+  • Ctrl+Shift+W      - Close window
+  • Ctrl+Shift+]      - Next tab
+  • Ctrl+Shift+[      - Previous tab
+  • Ctrl+Shift+F11    - Toggle fullscreen
+
+For more info: https://sw.kovidgoyal.net/kitty/
+
+EOF
+}
+
+post_upgrade() {
+    cat << EOF
+
+╔════════════════════════════════════════════════════════════╗
+║           Raven Kitty Configuration Updated                ║
+╚════════════════════════════════════════════════════════════╝
+
+✓ Configuration updated in /etc/skel/.config/kitty/
+
+IMPORTANT: Your existing configuration was NOT modified.
+
+To update your personal config:
+  1. Backup current: cp -r ~/.config/kitty ~/.config/kitty.backup
+  2. Update: cp -r /etc/skel/.config/kitty ~/.config/
+  3. Reload Kitty: Ctrl+Shift+F2
+
+Or merge changes manually from /etc/skel/.config/kitty/
+
+EOF
+}
+
+pre_remove() {
+    cat << EOF
+
+Removing Raven Kitty configuration...
+Your personal config in ~/.config/kitty will NOT be removed.
+
+EOF
+}
+
+post_remove() {
+    cat << EOF
+
+Raven Kitty configuration removed from /etc/skel/
+Your personal configuration remains in ~/.config/kitty
+
+EOF
+}

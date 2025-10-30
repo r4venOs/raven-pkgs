@@ -1,0 +1,17 @@
+pkgbase = raven-kitty
+	pkgdesc = Raven Kitty configuration - Custom Kitty terminal emulator config for OffenArch
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/r4venOs/raven-kitty
+	install = raven-kitty.install
+	arch = any
+	license = MIT
+	depends = kitty
+	optdepends = ttf-firacode-nerd: Recommended font with ligatures
+	optdepends = ttf-jetbrains-mono-nerd: Alternative programming font
+	optdepends = nerd-fonts: Icon support
+	backup = etc/skel/.config/kitty/kitty.conf
+	backup = etc/skel/.config/kitty/theme.conf
+	backup = etc/skel/.config/kitty/colors.conf
+
+pkgname = raven-kitty

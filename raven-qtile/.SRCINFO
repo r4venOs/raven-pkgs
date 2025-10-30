@@ -1,0 +1,20 @@
+pkgbase = raven-qtile
+	pkgdesc = Raven Qtile configuration - Custom Qtile window manager config for OffenArch
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/r4venOs/raven-qtile
+	install = raven-qtile.install
+	arch = any
+	license = MIT
+	depends = qtile
+	depends = python
+	depends = python-psutil
+	optdepends = picom: Compositor for transparency and effects
+	optdepends = nitrogen: Wallpaper manager
+	optdepends = rofi: Application launcher
+	optdepends = kitty: Terminal emulator
+	optdepends = dunst: Notification daemon
+	backup = etc/skel/.config/qtile/config.py
+	backup = etc/skel/.config/qtile/autostart.sh
+
+pkgname = raven-qtile

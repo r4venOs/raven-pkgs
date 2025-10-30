@@ -1,27 +1,82 @@
-# Maintainer: Your Name <your.email@example.com>
+# Maintainer: r4venOs <https://github.com/r4venOs>
 pkgname=raven-qtile
 pkgver=1.0.0
 pkgrel=1
-pkgdesc="Configuration files for raven-qtile"
+pkgdesc="Raven Qtile configuration - Custom Qtile window manager config for OffenArch"
 arch=('any')
-url="https://github.com/yourusername/package"
+url="https://github.com/r4venOs/raven-qtile"
 license=('MIT')
-depends=()
-optdepends=()
-backup=()
+depends=('qtile' 'python' 'python-psutil')
+optdepends=(
+    'picom: Compositor for transparency and effects'
+    'nitrogen: Wallpaper manager'
+    'rofi: Application launcher'
+    'kitty: Terminal emulator'
+    'dunst: Notification daemon'
+)
+backup=('etc/skel/.config/qtile/config.py'
+        'etc/skel/.config/qtile/autostart.sh')
+install=${pkgname}.install
 source=()
 sha256sums=()
 
 package() {
-    # Create necessary directories
-    install -dm755 "$pkgdir/etc/skel/.config"
+    # Copy qtile configuration from local directory
+    # Files should be in: etc/skel/.config/qtile/ relative to PKGBUILD
     
-    # Copy configuration files
-    if [ -d "$srcdir/config" ]; then
-        cp -r "$srcdir/config"/* "$pkgdir/etc/skel/.config/"
+    if [ -d "${startdir}/etc/skel/.config/qtile" ]; then
+        # Use local etc/skel structure
+        install -dm755 "${pkgdir}/etc/skel/.config"
+        cp -r "${startdir}/etc/skel/.config/qtile" "${pkgdir}/etc/skel/.config/"
+        
+        # Set proper permissions
+        find "${pkgdir}/etc/skel/.config/qtile" -type f -exec chmod 644 {} \;
+        find "${pkgdir}/etc/skel/.config/qtile" -type d -exec chmod 755 {} \;
+        
+        # Make scripts executable
+        if [ -f "${pkgdir}/etc/skel/.config/qtile/autostart.sh" ]; then
+            chmod 755 "${pkgdir}/etc/skel/.config/qtile/autostart.sh"
+        fi
+        
+        if [ -d "${pkgdir}/etc/skel/.config/qtile/scripts" ]; then
+            chmod +x "${pkgdir}/etc/skel/.config/qtile/scripts/"*.sh 2>/dev/null || true
+        fi
+    else
+        # Fallback: copy from user's home directory
+        if [ -d "$HOME/.config/qtile" ]; then
+            install -dm755 "${pkgdir}/etc/skel/.config/qtile"
+            
+            # Copy config.py
+            if [ -f "$HOME/.config/qtile/config.py" ]; then
+                install -Dm644 "$HOME/.config/qtile/config.py" "${pkgdir}/etc/skel/.config/qtile/config.py"
+            fi
+            
+            # Copy autostart.sh
+            if [ -f "$HOME/.config/qtile/autostart.sh" ]; then
+                install -Dm755 "$HOME/.config/qtile/autostart.sh" "${pkgdir}/etc/skel/.config/qtile/autostart.sh"
+            fi
+            
+            # Copy scripts directory
+            if [ -d "$HOME/.config/qtile/scripts" ]; then
+                cp -r "$HOME/.config/qtile/scripts" "${pkgdir}/etc/skel/.config/qtile/"
+                chmod +x "${pkgdir}/etc/skel/.config/qtile/scripts/"*.sh 2>/dev/null || true
+            fi
+            
+            # Copy wallpapers
+            if [ -d "$HOME/.config/qtile/Wallpaper" ]; then
+                cp -r "$HOME/.config/qtile/Wallpaper" "${pkgdir}/etc/skel/.config/qtile/"
+            fi
+            
+            # Copy images
+            for img in "$HOME/.config/qtile/"*.{png,jpg,jpeg}; do
+                if [ -f "$img" ]; then
+                    cp "$img" "${pkgdir}/etc/skel/.config/qtile/"
+                fi
+            done
+        else
+            echo "ERROR: No qtile configuration found!"
+            echo "Please create etc/skel/.config/qtile/ directory with your config files"
+            return 1
+        fi
     fi
-    
-    # Set proper permissions
-    find "$pkgdir/etc/skel/.config" -type f -exec chmod 644 {} \;
-    find "$pkgdir/etc/skel/.config" -type d -exec chmod 755 {} \;
 }
