@@ -1,0 +1,27 @@
+# Maintainer: Your Name <your.email@example.com>
+pkgname=raven-qtile
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Configuration files for raven-qtile"
+arch=('any')
+url="https://github.com/yourusername/package"
+license=('MIT')
+depends=()
+optdepends=()
+backup=()
+source=()
+sha256sums=()
+
+package() {
+    # Create necessary directories
+    install -dm755 "$pkgdir/etc/skel/.config"
+    
+    # Copy configuration files
+    if [ -d "$srcdir/config" ]; then
+        cp -r "$srcdir/config"/* "$pkgdir/etc/skel/.config/"
+    fi
+    
+    # Set proper permissions
+    find "$pkgdir/etc/skel/.config" -type f -exec chmod 644 {} \;
+    find "$pkgdir/etc/skel/.config" -type d -exec chmod 755 {} \;
+}

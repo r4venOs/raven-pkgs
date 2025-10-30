@@ -1,0 +1,10 @@
+# Build files
+*.pkg.tar.*
+*.src.tar.gz
+pkg/
+src/
+
+# Temporary files
+*.log
+*~
+.*.swp
